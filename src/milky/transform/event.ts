@@ -179,7 +179,8 @@ export async function transformGroupNotify(
         data: {
           group_id: Number(notify.group.groupCode),
           invitation_seq: Number(notify.seq),
-          initiator_id: Number(await ctx.ntUserApi.getUinByUid(notify.user2.uid))
+          initiator_id: Number(await ctx.ntUserApi.getUinByUid(notify.user2.uid)),
+          source_group_id: Number(notify.invitationExt.groupCode)
         } satisfies MilkyEventTypes['group_invitation']
       }
     }

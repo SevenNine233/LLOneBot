@@ -60,14 +60,19 @@ class OneBot11Adapter extends Service {
   private connect: (OB11Http | OB11HttpPost | OB11WebSocket | OB11WebSocketReverse)[]
   private actionMap: Map<string, BaseAction<unknown, unknown>>
   private reportOfflineMessage: boolean
+  private reportSelfMessage: boolean
 
   constructor(public ctx: Context, public config: OneBot11Adapter.Config) {
     super(ctx, 'onebot', true)
     this.actionMap = initActionMap(this)
     this.reportOfflineMessage = false
+    this.reportSelfMessage = false
     this.connect = config.connect.map(item => {
       if (item.reportOfflineMessage) {
         this.reportOfflineMessage = true
+      }
+      if (item.reportSelfMessage) {
+        this.reportSelfMessage = true
       }
       if (item.type === 'http') {
         return new OB11Http(ctx, {
@@ -113,7 +118,7 @@ class OneBot11Adapter extends Service {
         const requestUin = await this.ctx.ntUserApi.getUinByUid(notify.user1.uid)
         const event = new OB11GroupRequestAddEvent(
           +notify.group.groupCode,
-          +requestUin || 0,
+          +requestUin,
           flag,
           notify.postscript,
         )
@@ -125,9 +130,10 @@ class OneBot11Adapter extends Service {
         this.ctx.logger.info('收到邀请我加群通知, 邀请人uin:', userId)
         const event = new OB11GroupRequestInviteBotEvent(
           +notify.group.groupCode,
-          +userId || 0,
+          +userId,
           flag,
           notify.postscript,
+          +notify.invitationExt.groupCode,
         )
         this.dispatch(event)
       }
@@ -137,10 +143,10 @@ class OneBot11Adapter extends Service {
         const invitorId = await this.ctx.ntUserApi.getUinByUid(notify.user2.uid)
         const event = new OB11GroupRequestAddEvent(
           +notify.group.groupCode,
-          +userId || 0,
+          +userId,
           flag,
           notify.postscript,
-          +invitorId || 0,
+          +invitorId,
         )
         this.dispatch(event)
       }
@@ -151,6 +157,9 @@ class OneBot11Adapter extends Service {
 
   private async handleMsg(message: RawMessage, self: boolean, offline: boolean) {
     if (offline && !this.reportOfflineMessage) {
+      return
+    }
+    if (self && !this.reportSelfMessage) {
       return
     }
 
@@ -263,9 +272,13 @@ class OneBot11Adapter extends Service {
     }
     if (config.ob11.enable) {
       this.reportOfflineMessage = false
+      this.reportSelfMessage = false
       this.connect = config.ob11.connect.map(item => {
         if (item.reportOfflineMessage) {
           this.reportOfflineMessage = true
+        }
+        if (item.reportSelfMessage) {
+          this.reportSelfMessage = true
         }
         if (item.type === 'http') {
           return new OB11Http(this.ctx, {
