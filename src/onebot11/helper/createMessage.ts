@@ -347,7 +347,6 @@ export async function handleOb11RichMedia(ctx: Context, segment: OB11MessageFile
   const res = await uri2local(ctx, segment.data.url || segment.data.file)
 
   if (!res.success) {
-    ctx.logger.error(res.errMsg)
     throw new Error(res.errMsg)
   }
 

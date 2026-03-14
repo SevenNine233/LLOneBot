@@ -51,9 +51,8 @@ export function checkUriType(uri: string): { type: FileUriType } {
   if (uri.startsWith('file://')) {
     return { type: FileUriType.FileURL }
   }
-  try {
-    if (fs.existsSync(uri)) return { type: FileUriType.Path }
-  } catch {
+  if (fs.existsSync(uri)) {
+    return { type: FileUriType.Path }
   }
   return { type: FileUriType.Unknown }
 }
