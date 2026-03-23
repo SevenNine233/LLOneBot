@@ -2,14 +2,6 @@ import path from 'node:path'
 import { writeFile } from 'node:fs/promises'
 import QRCode from 'qrcode'
 
-// 全局异常处理，防止未捕获的异常导致程序崩溃
-process.on('uncaughtException', (err) => {
-  console.error('[uncaughtException]', err?.message || err)
-})
-process.on('unhandledRejection', (reason) => {
-  console.error('[unhandledRejection]', reason)
-})
-
 // fluent-ffmpeg 需要用到这个
 globalThis.__dirname = import.meta.dirname
 import Log from './log'
@@ -53,9 +45,6 @@ declare module 'cordis' {
   }
 }
 
-
-
-
 async function onLoad() {
   if (!existsSync(DATA_DIR)) {
     mkdirSync(DATA_DIR, { recursive: true })
@@ -88,6 +77,14 @@ async function onLoad() {
     filename: logFileName,
   })
   ctx.plugin(WebUIServer, config.webui)
+
+  // 全局异常处理，防止未捕获的异常导致程序崩溃
+  process.on('uncaughtException', (err) => {
+    ctx.logger.error('[uncaughtException]', err?.message || err)
+  })
+  process.on('unhandledRejection', (reason) => {
+    ctx.logger.error('[unhandledRejection]', reason)
+  })
 
   const loadPluginAfterLogin = () => {
     ctx.plugin(Database)

@@ -430,7 +430,6 @@ export class WebUIServer extends Service {
   }
 
   async start() {
-    console.log('webui start')
     if (!this.config?.enable) {
       return
     }

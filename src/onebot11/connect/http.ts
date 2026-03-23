@@ -144,7 +144,7 @@ class OB11Http {
     }
 
     if (clientToken !== serverToken) {
-      return c.json({ message: 'Unauthorized' }, 401)
+      return c.json({ message: 'token verify failed' }, 403)
     } else {
       await next()
     }
