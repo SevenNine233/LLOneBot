@@ -220,9 +220,13 @@ class OB11HttpPost {
           const eventName = event.post_type + '.' + event[event.post_type + '_type']
           this.ctx.logger.info(`HTTP 事件上报: ${host}`, eventName, res.status)
         }
+        // https://docs.go-cqhttp.org/reference/#%E5%BF%AB%E9%80%9F%E6%93%8D%E4%BD%9C
+        if (res.status === 204 || res.headers.get('Content-Length') === '0') {
+          return
+        }
         try {
           const resJson = await res.json()
-          this.ctx.logger.info(`HTTP 事件上报后返回快速操作:`, JSON.stringify(resJson))
+          this.ctx.logger.info(`HTTP 事件上报后返回快速操作:`, resJson)
           handleQuickOperation(this.ctx, event as QuickOperationEvent, resJson).catch(e => this.ctx.logger.error(e))
         } catch (e) { }
       },
