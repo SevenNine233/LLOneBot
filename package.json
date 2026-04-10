@@ -11,7 +11,8 @@
     "build-webui": "npm --prefix src/webui/FE run build",
     "postinstall": "npm --prefix src/webui/FE install",
     "format": "prettier -cw .",
-    "check": "tsc"
+    "check": "tsc",
+    "test:webui": "vitest run --config vitest.config.ts"
   },
   "author": "",
   "license": "GPL-2.0",
@@ -50,7 +51,8 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "vite": "^8.0.8",
-    "vite-plugin-cp": "^6.0.3"
+    "vite-plugin-cp": "^6.0.3",
+    "vitest": "^4.1.4"
   },
   "packageManager": "yarn@4.13.0"
 }
