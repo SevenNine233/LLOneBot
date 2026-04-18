@@ -3,6 +3,7 @@ import { OB11Config, ConnectConfig, WsConnectConfig, WsReverseConnectConfig, Htt
 import { Radio, Wifi, Globe, Send, X, Settings, Plus, Trash2, Edit2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { Portal, HostSelector } from '../common';
 import { showToast } from '../common';
+import EventFilterEditor from './EventFilterEditor';
 
 interface OneBotConfigProps {
   config: OB11Config;
@@ -412,6 +413,13 @@ const OneBotConfigNew: React.FC<OneBotConfigProps> = ({ config, onChange, onSave
                   </div>
                 </div>
               </div>
+
+              {/* 事件过滤器 */}
+              <EventFilterEditor
+                key={selectedAdapterIndex}
+                filter={selectedAdapter.filter}
+                onChange={(f) => updateSelectedAdapter('filter', f)}
+              />
             </div>
 
             {/* Footer */}
