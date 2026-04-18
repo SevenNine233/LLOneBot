@@ -382,6 +382,7 @@ ${PMHQ_ENV}
       - app_network
     volumes:
       - qq_volume:/root/.config/QQ
+      - ./llbot_config:/app/llbot/data:rw
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:13000/health"]
