@@ -139,6 +139,10 @@ jobs:
           }
           CONF
 
+      - name: Fix QQ data permissions
+        run: |
+          sudo chown -R $(id -u):$(id -g) /var/lib/docker/volumes/llbot-test_qq_volume1/_data /var/lib/docker/volumes/llbot-test_qq_volume2/_data
+
       - name: Start LLBot instances
         run: |
           cd $GITHUB_WORKSPACE/workspace1 && npx tsx $GITHUB_WORKSPACE/src/main/main.ts --pmhq-host=127.0.0.1 --pmhq-port=13001 > llbot1.log 2>&1 &
