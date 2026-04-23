@@ -156,9 +156,8 @@ jobs:
         run: |
           docker run --rm --name e2e-runner \
             --network llbot-test_test_network \
-            -v ${{ github.workspace }}/test/onebot11-api-test:/app/test:rw \
-            -v ${{ github.workspace }}/src:/app/src:ro \
-            -w /app/test \
+            -v ${{ github.workspace }}:/app/workspace:rw \
+            -w /app/workspace/test/onebot11-api-test \
             node:24-alpine3.23 sh -c "npm install && npm test"
         continue-on-error: true
 
