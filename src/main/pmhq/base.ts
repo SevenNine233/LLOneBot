@@ -465,14 +465,12 @@ export class PMHQBase extends Service {
         this.call(funcName, args, timeout).then(r => {
           firstResult = r
           if (options.onCallResult) {
-            const fallback = options.onCallResult(r)
-            if (fallback !== undefined) {
-              // 替换超时行为：超时时用默认值 resolve 而不是 reject
+            const result = options.onCallResult(r)
+            if (result !== undefined) {
+              resolve(result)
+              this.removeReceiveHook(hookId)
               if (timeoutId) clearTimeout(timeoutId)
-              timeoutId = setTimeout(() => {
-                this.removeReceiveHook(hookId)
-                resolve(fallback)
-              }, timeout)
+              return
             }
           }
           if (r && Object.hasOwn(r, 'result') && +r.result !== 0) {
