@@ -355,23 +355,22 @@ export class NTQQGroupApi extends Service {
   }
 
   async getGroupShutUpMemberList(groupCode: string): Promise<GroupMember[]> {
-    try {
-      const res = await this.ctx.pmhq.invoke<[
-        groupCode: string,
-        memList: GroupMember[]
-      ]>(
-        'nodeIKernelGroupService/getGroupShutUpMemberList',
-        [groupCode],
-        {
-          resultCmd: 'nodeIKernelGroupListener/onShutUpMemberListChanged',
-          resultCb: payload => payload[0] === groupCode,
-          timeout: 5000,
+    const res = await this.ctx.pmhq.invoke<[
+      groupCode: string,
+      memList: GroupMember[]
+    ]>(
+      'nodeIKernelGroupService/getGroupShutUpMemberList',
+      [groupCode],
+      {
+        resultCmd: 'nodeIKernelGroupListener/onShutUpMemberListChanged',
+        resultCb: payload => payload[0] === groupCode,
+        onCallResult: (r) => {
+          // void 返回表示没有禁言成员，QQ 不会触发回调，直接返回空列表
+          if (!r) return [groupCode, []] as [string, GroupMember[]]
         },
-      )
-      return res[1]
-    } catch {
-      return []
-    }
+      },
+    )
+    return res[1]
   }
 
   async renameGroupFolder(groupId: string, folderId: string, newFolderName: string) {

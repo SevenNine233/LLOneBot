@@ -53,6 +53,7 @@ interface InvokeOptions<ReturnType> {
   resultCmd?: string // 表示这次call是异步的，返回结果会通过这个命令上报
   resultCb?: (data: ReturnType, firstResult: any) => boolean // 结果回调，直到返回true才会移除钩子
   timeout?: number
+  onCallResult?: (result: any) => ReturnType | undefined // 根据call返回值提前resolve，返回undefined则继续等待resultCmd
 }
 
 interface NTListener {
@@ -463,6 +464,15 @@ export class PMHQBase extends Service {
         })
         this.call(funcName, args, timeout).then(r => {
           firstResult = r
+          if (options.onCallResult) {
+            const earlyResult = options.onCallResult(r)
+            if (earlyResult !== undefined) {
+              resolve(earlyResult)
+              this.removeReceiveHook(hookId)
+              if (timeoutId) clearTimeout(timeoutId)
+              return
+            }
+          }
           if (r && Object.hasOwn(r, 'result') && +r.result !== 0) {
             const displayReq = inspect(args, {
               depth: 10,
